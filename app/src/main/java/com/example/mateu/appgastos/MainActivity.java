@@ -17,13 +17,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.example.mateu.appgastos.DAO.Gasto;
+import com.example.mateu.appgastos.DAO.GastosAdapter;
+import com.example.mateu.appgastos.DAO.GastosDAO;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private RecyclerView recyclerView;
-    //private ComprasAdapter adapter;
+    private GastosAdapter adapter;
 
     private TextView seu_nome;
     private TextView seu_email;
@@ -47,8 +53,8 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                findViewById(R.id.include_main).setVisibility(View.INVISIBLE);
+                findViewById(R.id.include_cadastro).setVisibility(View.VISIBLE);
             }
         });
 
@@ -80,6 +86,63 @@ public class MainActivity extends AppCompatActivity
             seu_nome.setText("sem nome");
             seu_email.setText("sem email");
         }
+
+        //        Botões de Incluir/Cancelar/Limpar
+        Button btnCancelar = (Button) findViewById(R.id.btn_cancelarID);
+        btnCancelar.setOnClickListener(new Button.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.include_main).setVisibility(View.VISIBLE);
+                findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
+            }
+        });
+
+
+        Button btnLimpar = (Button) findViewById(R.id.btn_limparID);
+        btnLimpar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        Button btnSalvar = (Button) findViewById(R.id.btn_salvarID);
+        btnSalvar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText txtItem = findViewById(R.id.et_itemID);
+                EditText txtValor = findViewById(R.id.et_valorID);
+
+                //pegando os valores
+                String item = txtItem.getText().toString();
+                String valor = txtValor.getText().toString();
+                if (item.equals("")) {
+                    Snackbar.make(view, "Preencha o item!", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    //salvando os dados
+                    Gasto gasto = new Gasto(0, item, valor);
+                    GastosDAO dao = new GastosDAO(getBaseContext());
+                    long salvoID = dao.salvarItem(gasto);
+                    if (salvoID != -1) {
+                        //limpa os campos
+                        txtValor.setText("");
+                        txtItem.setText("");
+
+                        //adiciona no recyclerView
+                        gasto.setID(salvoID);
+                        adapter.adicionarCompra(gasto);
+
+                        Snackbar.make(view, "Salvou!", Snackbar.LENGTH_LONG).show();
+                        findViewById(R.id.include_main).setVisibility(View.VISIBLE);
+                        findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
+                    } else {
+                        Snackbar.make(view, "Erro ao salvarItem, consulte os logs!", Snackbar.LENGTH_LONG).show();
+                        findViewById(R.id.include_main).setVisibility(View.VISIBLE);
+                        findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
+                    }
+                }
+            }
+        });
     }
 
     // Recebendo retorno de activity chamadas

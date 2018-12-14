@@ -8,10 +8,24 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
     <include
+        android:id="@+id/include_main"
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:visibility="visible"/>
+    <!--definir um id para poder acessar no java-->
+    <!--Incluir para controle de visibilidade -->
+
+
+    <include
+        android:id="@+id/include_cadastro"
+        layout="@layout/activity_add_gasto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
+    <!--Inclui a tela de cadastro-->
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
