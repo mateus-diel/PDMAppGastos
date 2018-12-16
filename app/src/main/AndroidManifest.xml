@@ -4,7 +4,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/financa"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -25,7 +25,7 @@
             android:name=".linhaGastos"
             android:label="@string/title_activity_linha_gastos"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".linhaGasto"></activity>
+        <activity android:name=".linhaGasto" />
     </application>
 
 </manifest>

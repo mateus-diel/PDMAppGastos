@@ -21,6 +21,7 @@ public class GastosDAO {
         ContentValues cv = new ContentValues();
         cv.put("Item", gasto.getItem());
         cv.put("valor", gasto.getValor());
+        cv.put("Icon", gasto.getIdIMG());
         return gw.getDatabase().insert(TABLE_GASTOS, null, cv);
     }
 
@@ -36,15 +37,16 @@ public class GastosDAO {
             int id = cursor.getInt(cursor.getColumnIndex("ID"));
             String item = cursor.getString(cursor.getColumnIndex("Item"));
             String valor = cursor.getString(cursor.getColumnIndex("Valor"));
-            gasto.add(new Gasto(id, item, valor));
+            int idimg = cursor.getInt(cursor.getColumnIndex("Icon"));
+            gasto.add(new Gasto(id, item, valor,idimg));
         }
         cursor.close();
         return gasto;
     }
 
     public void recriarTabela(){
-        gw.getDatabase().execSQL("DROP TABLE Gastos");
-        gw.getDatabase().execSQL("CREATE TABLE Gastos (ID INTEGER PRIMARY KEY AUTOINCREMENT, Item TEXT NOT NULL, Valor TEXT)");
+        gw.getDatabase().execSQL("DROP TABLE IF EXISTS Gastos");
+        gw.getDatabase().execSQL("CREATE TABLE Gastos (ID INTEGER PRIMARY KEY AUTOINCREMENT, Item TEXT NOT NULL, Valor TEXT, Icon INTEGER)");
     }
 
 }

@@ -26,7 +26,7 @@ public class GastosAdapter extends RecyclerView.Adapter<GastosHolder> {
     @Override
     public GastosHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new GastosHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.activity_linha_gasto, parent, false));
+                .inflate(R.layout.linha_gastos, parent, false));
     }
 
     @Override
@@ -35,6 +35,17 @@ public class GastosAdapter extends RecyclerView.Adapter<GastosHolder> {
         holder.valor.setText(gastos.get(position).getValor());
         final long deleteDbID = gastos.get(position).getID();
         final int deleteViewID = holder.getAdapterPosition();
+        if(gastos.get(position).getIdIMG()==0){
+            holder.cat.setImageResource(R.drawable.casahome);
+        }else if (gastos.get(position).getIdIMG()==1){
+            holder.cat.setImageResource(R.drawable.beleza);
+        }else if (gastos.get(position).getIdIMG()==2){
+            holder.cat.setImageResource(R.drawable.comida);
+        }else if (gastos.get(position).getIdIMG()==3){
+            holder.cat.setImageResource(R.drawable.cartao);
+        }else if (gastos.get(position).getIdIMG()==4){
+            holder.cat.setImageResource(R.drawable.outros);
+        }
 
         holder.btnExcluir.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,7 +66,7 @@ public class GastosAdapter extends RecyclerView.Adapter<GastosHolder> {
                                     Snackbar.make(view, "Excluiu!", Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
                                 } else {
-                                    Snackbar.make(view, "Erro ao excluir o cliente!", Snackbar.LENGTH_LONG)
+                                    Snackbar.make(view, "Erro ao excluir o item!", Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
                                 }
                             }

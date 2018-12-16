@@ -1,13 +1,18 @@
 package com.example.mateu.appgastos;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,11 +24,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mateu.appgastos.DAO.Gasto;
 import com.example.mateu.appgastos.DAO.GastosAdapter;
 import com.example.mateu.appgastos.DAO.GastosDAO;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -58,11 +68,22 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        FloatingActionButton fabD = (FloatingActionButton) findViewById(R.id.fabD);
+        fabD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findViewById(R.id.include_main).setVisibility(View.INVISIBLE);
+                findViewById(R.id.include_despesas).setVisibility(View.INVISIBLE);
+                findViewById(R.id.include_cadastro).setVisibility(View.VISIBLE);
+            }
+        });
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+
 
         // Obtem a referência do layout de navegação
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -120,7 +141,7 @@ public class MainActivity extends AppCompatActivity
                     Snackbar.make(view, "Preencha o item!", Snackbar.LENGTH_SHORT).show();
                 } else {
                     //salvando os dados
-                    Gasto gasto = new Gasto(0, item, valor);
+                    Gasto gasto = new Gasto(0, item, valor,getIdCategoria());
                     GastosDAO dao = new GastosDAO(getBaseContext());
                     long salvoID = dao.salvarItem(gasto);
                     if (salvoID != -1) {
@@ -132,17 +153,78 @@ public class MainActivity extends AppCompatActivity
                         gasto.setID(salvoID);
                         adapter.adicionarCompra(gasto);
 
-                        Snackbar.make(view, "Salvou!", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view, "Salvo!", Snackbar.LENGTH_LONG).show();
                         findViewById(R.id.include_main).setVisibility(View.VISIBLE);
                         findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
                     } else {
-                        Snackbar.make(view, "Erro ao salvarItem, consulte os logs!", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(view, "Erro ao salvar Item, consulte os logs!", Snackbar.LENGTH_LONG).show();
                         findViewById(R.id.include_main).setVisibility(View.VISIBLE);
                         findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
                     }
                 }
             }
         });
+        final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton rb=(RadioButton)findViewById(checkedId);
+                int count = radioGroup.getChildCount();
+                for (int i=0;i<count;i++) {
+                    View o = radioGroup.getChildAt(i);
+                    if (o instanceof RadioButton) {
+                        ((RadioButton) o).setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                    }
+                }
+                rb.setTextColor(getResources().getColor(R.color.Blue));
+                Toast.makeText(getBaseContext(), rb.getText(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        configurarRecycler();
+    }
+
+    private int getIdCategoria(){
+        final int[] value = {5};
+        value[0]=4;
+        final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        if (radioGroup.getCheckedRadioButtonId()!=-1) {
+            RadioButton rb = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
+            if (String.valueOf(rb.getText()).equalsIgnoreCase("Casa")) {
+                value[0] = 0;
+            } else if (String.valueOf(rb.getText()).equalsIgnoreCase("Salão")) {
+                value[0] = 1;
+            }
+            if (String.valueOf(rb.getText()).equalsIgnoreCase("Comida")) {
+                value[0] = 2;
+            }
+            if (String.valueOf(rb.getText()).equalsIgnoreCase("Cartão")) {
+                value[0] = 3;
+            }
+            if (String.valueOf(rb.getText()).equalsIgnoreCase("Outros")) {
+                value[0] = 4;
+            }
+        }
+        return value[0];
+    }
+
+    private void configurarRecycler() {
+        // Configurando o gerenciador de layout para ser uma lista.
+        recyclerView = (RecyclerView) findViewById(R.id.despesas_recyclerViewID);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+
+        // Adiciona o adapter que irá anexar os objetos à lista.
+        GastosDAO dao = new GastosDAO(this);
+        adapter = new GastosAdapter(dao.retornarTodos());
+        recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+
+        // Adicionar o arrastar para direita para excluir item
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(addArrastarItem());
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
     }
 
     // Recebendo retorno de activity chamadas
@@ -157,6 +239,51 @@ public class MainActivity extends AppCompatActivity
                 seu_email.setText(params.getString("Email"));
             }
         }
+    }
+
+    public ItemTouchHelper.SimpleCallback addArrastarItem() {
+        ItemTouchHelper.SimpleCallback deslizarItem = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.DOWN | ItemTouchHelper.UP) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                Toast.makeText(getBaseContext(), "on Move", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                final int deleteViewID = viewHolder.getAdapterPosition();
+                AlertDialog.Builder builder = new AlertDialog.Builder(viewHolder.itemView.getContext());
+                builder.setTitle("Confirmação")
+                        .setMessage("Tem certeza que deseja excluir este item? ")
+                        .setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                GastosDAO dao = new GastosDAO(getBaseContext());
+                                int numItens = dao.excluirItem(adapter.getDbID(deleteViewID));
+                                if (numItens > 0) {
+                                    adapter.removerCompra(deleteViewID);
+                                    Snackbar.make(main_layout, "Excluido com sucesso!", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                } else {
+                                    Snackbar.make(main_layout, "Erro ao excluir o item!", Snackbar.LENGTH_LONG)
+                                            .setAction("Action", null).show();
+                                }
+                            }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Snackbar.make(main_layout, "Cancelando...", Snackbar.LENGTH_SHORT)
+                                        .setAction("Action", null).show();
+                                adapter.cancelarRemocao(deleteViewID);
+                            }
+                        })
+                        .create()
+                        .show();
+            }
+        };
+        return deslizarItem;
     }
 
     @Override
@@ -203,15 +330,46 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_inicio) {
-            // Handle the camera action
+            findViewById(R.id.include_main).setVisibility(View.VISIBLE);
+            findViewById(R.id.include_despesas).setVisibility(View.INVISIBLE);
+            findViewById(R.id.include_relatorio).setVisibility(View.INVISIBLE);
+            findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_relatorio) {
-
+            findViewById(R.id.include_despesas).setVisibility(View.INVISIBLE);
+            findViewById(R.id.include_main).setVisibility(View.INVISIBLE);
+            findViewById(R.id.include_relatorio).setVisibility(View.VISIBLE);
+            findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_despesas) {
-
+            findViewById(R.id.include_despesas).setVisibility(View.VISIBLE);
+            findViewById(R.id.include_main).setVisibility(View.INVISIBLE);
+            findViewById(R.id.include_relatorio).setVisibility(View.INVISIBLE);
+            findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
         } else if (id == R.id.nav_share) {
-
+            Intent sendIntent = new Intent();
+            sendIntent.setAction(Intent.ACTION_SEND);
+            GastosDAO dao = new GastosDAO(this);
+            List<Gasto> compras = dao.retornarTodos();
+            String texto = "";
+            for (Gasto gasto : compras) {
+                texto = texto + gasto.getItem() +": R$"+gasto.getValor() + "\n";
+            }
+            sendIntent.putExtra(Intent.EXTRA_TEXT, texto);
+            sendIntent.setType("text/plain");
+            startActivity(sendIntent);
         } else if (id == R.id.nav_ajuda) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Sobre")
+                    .setMessage("Aplicativo desenvolvido como método avaliativo " +
+                            "da disciplina de \"Programação para Dispositivos Móveis\"" +
+                            " do Curso de Ciência da Computação da UNIJUÍ!")
+                    .setNeutralButton("OK",
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
 
+                                }
+                            })
+                    .show();
         } else if (id == R.id.action_settings){
 
         }

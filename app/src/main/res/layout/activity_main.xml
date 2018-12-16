@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
-
+    <include layout="@layout/toolbar" />
 
     <include
         android:id="@+id/include_main"
@@ -22,6 +22,22 @@
     <include
         android:id="@+id/include_cadastro"
         layout="@layout/activity_add_gasto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
+    <!--Inclui a tela de cadastro-->
+
+    <include
+        android:id="@+id/include_despesas"
+        layout="@layout/app_bar_despesas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"/>
+    <!--Inclui a tela de cadastro-->
+
+    <include
+        android:id="@+id/include_relatorio"
+        layout="@layout/app_bar_relatorio"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="invisible"/>

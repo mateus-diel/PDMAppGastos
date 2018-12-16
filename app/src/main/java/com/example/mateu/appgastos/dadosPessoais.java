@@ -1,6 +1,8 @@
 package com.example.mateu.appgastos;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,12 +12,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.mateu.appgastos.DAO.GastosDAO;
 
 public class dadosPessoais extends AppCompatActivity {
     private Button btn_salvar;
     private Button btn_limpar;
     private EditText et_nome;
     private EditText et_email;
+    private Button deletarTudo;
     private ConstraintLayout ml_dados_pessoais;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -30,6 +36,7 @@ public class dadosPessoais extends AppCompatActivity {
         et_nome = findViewById(R.id.et_nomeID);
         et_email = findViewById(R.id.et_emailID);
         ml_dados_pessoais = findViewById(R.id.dadosPessoaisID);
+        deletarTudo = findViewById(R.id.apagarTudo);
 
         // Inicialização para gravar as preferencias
         pref = getSharedPreferences("ListaComprasPrefArq",  MODE_PRIVATE);
@@ -49,6 +56,31 @@ public class dadosPessoais extends AppCompatActivity {
                 i.putExtra("Email", et_email.getText().toString());
                 setResult(RESULT_OK, i);
                 finish();
+            }
+        });
+
+        deletarTudo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(dadosPessoais.this);
+                builder.setTitle("Confirmação")
+                        .setMessage("Tem certeza que deseja excluir todos os dados da aplicação? ")
+                        .setPositiveButton("Excluir", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                btn_limpar.performClick();
+                                GastosDAO dao = new GastosDAO(getBaseContext());
+                                dao.recriarTabela();
+                                Toast.makeText(getBaseContext(),"Dados apagados!",Toast.LENGTH_LONG).show();
+                            }
+                        })
+                        .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .create()
+                        .show();
             }
         });
         btn_limpar.setOnClickListener(new View.OnClickListener() {
