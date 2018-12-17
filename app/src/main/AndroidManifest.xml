@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.mateu.appgastos">
-
+    <uses-permission android:name="ANDROID.PERMISSION.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="ANDROID.PERMISSION.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="ANDROID.PERMISSION.READ_INTERNAL_STORAGE"/>
+    <uses-permission android:name="ANDROID.PERMISSION.WRITE_INTERNAL_STORAGE"/>
     <application
         android:allowBackup="true"
         android:icon="@drawable/financa"

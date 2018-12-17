@@ -33,7 +33,13 @@ import android.widget.Toast;
 import com.example.mateu.appgastos.DAO.Gasto;
 import com.example.mateu.appgastos.DAO.GastosAdapter;
 import com.example.mateu.appgastos.DAO.GastosDAO;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
@@ -56,6 +62,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         main_layout = findViewById(R.id.main_layoutID);
+
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -183,6 +190,8 @@ public class MainActivity extends AppCompatActivity
 
             }
         });
+
+
         configurarRecycler();
     }
 
@@ -356,6 +365,41 @@ public class MainActivity extends AppCompatActivity
             findViewById(R.id.include_main).setVisibility(View.INVISIBLE);
             findViewById(R.id.include_relatorio).setVisibility(View.VISIBLE);
             findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
+            PieChart chart = (PieChart) findViewById(R.id.chart);
+            float[] um = {0};
+            float[] d = {0};
+            float[] t = {0};
+            float[] q = {0};
+            float[] c = {0};
+            GastosDAO g = new GastosDAO(getBaseContext());
+            for (Gasto ga:g.retornarTodos()){
+                if (ga.getIdIMG()==0){
+                    um[0]=um[0]+Float.parseFloat(ga.getValor());
+                } else if(ga.getIdIMG()==1){
+                    d[0]=d[0]+Float.parseFloat(ga.getValor());
+                }else if(ga.getIdIMG()==2){
+                    t[0]=t[0]+Float.parseFloat(ga.getValor());
+                }else if(ga.getIdIMG()==3){
+                    q[0]=q[0]+Float.parseFloat(ga.getValor());
+                }else if(ga.getIdIMG()==4){
+                    c[0]=c[0]+Float.parseFloat(ga.getValor());
+                }
+            }
+
+
+            List<PieEntry> entries = new ArrayList<>();
+            entries.add(new PieEntry(um[0]));
+            PieDataSet dataSet = new PieDataSet(entries, "Casa"); // add entries to dataset
+            dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+            PieData pieData = new PieData(dataSet);
+
+           /* entries = new ArrayList<>();
+            entries.add(new PieEntry(d[0]));
+            dataSet = new PieDataSet(entries, "Salão"); // add entries to dataset
+            dataSet.setColors(ColorTemplate.COLORFUL_COLORS);*/
+            //pieData.addDataSet(dataSet);
+            chart.setData(pieData);
+            chart.invalidate(); // refresh
         } else if (id == R.id.nav_despesas) {
             findViewById(R.id.include_despesas).setVisibility(View.VISIBLE);
             findViewById(R.id.include_main).setVisibility(View.INVISIBLE);
