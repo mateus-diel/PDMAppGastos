@@ -388,16 +388,16 @@ public class MainActivity extends AppCompatActivity
 
 
             List<PieEntry> entries = new ArrayList<>();
-            entries.add(new PieEntry(um[0]));
-            PieDataSet dataSet = new PieDataSet(entries, "Casa"); // add entries to dataset
+            entries.add(new PieEntry(um[0], "Casa"));
+            entries.add(new PieEntry(d[0],"Salão"));
+            entries.add(new PieEntry(t[0],"Comida"));
+            entries.add(new PieEntry(q[0],"Cartão"));
+            entries.add(new PieEntry(c[0],"Outros"));
+            PieDataSet dataSet = new PieDataSet(entries,"Gastos"); // add entries to dataset
             dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-            PieData pieData = new PieData(dataSet);
 
-           /* entries = new ArrayList<>();
-            entries.add(new PieEntry(d[0]));
-            dataSet = new PieDataSet(entries, "Salão"); // add entries to dataset
-            dataSet.setColors(ColorTemplate.COLORFUL_COLORS);*/
-            //pieData.addDataSet(dataSet);
+
+            PieData pieData = new PieData(dataSet);
             chart.setData(pieData);
             chart.invalidate(); // refresh
         } else if (id == R.id.nav_despesas) {
