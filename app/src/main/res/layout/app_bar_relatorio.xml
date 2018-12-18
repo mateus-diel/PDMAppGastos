@@ -17,4 +17,12 @@
 
     <include layout="@layout/content_relatorio" />
 
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_marginTop="58dp"
+        android:layout_marginLeft="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Gráfico de Gastos" />
+
 </android.support.design.widget.CoordinatorLayout>

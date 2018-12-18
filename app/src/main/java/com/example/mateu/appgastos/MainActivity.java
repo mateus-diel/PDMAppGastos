@@ -366,36 +366,30 @@ public class MainActivity extends AppCompatActivity
             findViewById(R.id.include_relatorio).setVisibility(View.VISIBLE);
             findViewById(R.id.include_cadastro).setVisibility(View.INVISIBLE);
             PieChart chart = (PieChart) findViewById(R.id.chart);
-            float[] um = {0};
-            float[] d = {0};
-            float[] t = {0};
-            float[] q = {0};
-            float[] c = {0};
+            float[] vetor = {(float) 0.0,(float) 0.0,(float) 0.0,(float) 0.0,(float) 0.0};
             GastosDAO g = new GastosDAO(getBaseContext());
             for (Gasto ga:g.retornarTodos()){
                 if (ga.getIdIMG()==0){
-                    um[0]=um[0]+Float.parseFloat(ga.getValor());
+                    vetor[0]=vetor[0]+Float.parseFloat(ga.getValor());
                 } else if(ga.getIdIMG()==1){
-                    d[0]=d[0]+Float.parseFloat(ga.getValor());
+                    vetor[1]=vetor[1]+Float.parseFloat(ga.getValor());
                 }else if(ga.getIdIMG()==2){
-                    t[0]=t[0]+Float.parseFloat(ga.getValor());
+                    vetor[2]=vetor[2]+Float.parseFloat(ga.getValor());
                 }else if(ga.getIdIMG()==3){
-                    q[0]=q[0]+Float.parseFloat(ga.getValor());
+                    vetor[3]=vetor[3]+Float.parseFloat(ga.getValor());
                 }else if(ga.getIdIMG()==4){
-                    c[0]=c[0]+Float.parseFloat(ga.getValor());
+                    vetor[4]=vetor[4]+Float.parseFloat(ga.getValor());
                 }
             }
 
-
             List<PieEntry> entries = new ArrayList<>();
-            entries.add(new PieEntry(um[0], "Casa"));
-            entries.add(new PieEntry(d[0],"Salão"));
-            entries.add(new PieEntry(t[0],"Comida"));
-            entries.add(new PieEntry(q[0],"Cartão"));
-            entries.add(new PieEntry(c[0],"Outros"));
+            entries.add(new PieEntry(vetor[0], "Casa"));
+            entries.add(new PieEntry(vetor[1],"Salão"));
+            entries.add(new PieEntry(vetor[2],"Comida"));
+            entries.add(new PieEntry(vetor[3],"Cartão"));
+            entries.add(new PieEntry(vetor[4],"Outros"));
             PieDataSet dataSet = new PieDataSet(entries,"Gastos"); // add entries to dataset
             dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-
 
             PieData pieData = new PieData(dataSet);
             chart.setData(pieData);
